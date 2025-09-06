@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AulaPudú - Plataforma Interactiva de Presentaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Nueva paleta de colores pastel */
         :root {
             --primary-blue: #A7C7E7;
             --primary-green: #A8E6CF;
@@ -40,7 +42,6 @@
             line-height: 1.6;
         }
 
-        /* Encabezado mejorado */
         header {
             background-color: var(--white);
             padding: 15px 30px;
@@ -95,7 +96,6 @@
             box-shadow: 0 6px 12px var(--shadow-hover);
         }
 
-        /* Contenedor principal */
         .container {
             flex: 1;
             display: flex;
@@ -104,7 +104,6 @@
             padding: 20px;
         }
 
-        /* Tarjetas mejoradas */
         .card {
             background-color: var(--white);
             border-radius: 20px;
@@ -152,7 +151,6 @@
             background-color: var(--primary-green);
         }
 
-        /* Panel del presentador mejorado */
         .presenter-dashboard {
             display: flex;
             flex: 1;
@@ -302,7 +300,7 @@
             border: 1px solid var(--light-blue);
             margin-bottom: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px var(--shadow);
+            box-shadow: 极 4px 10px var(--shadow);
         }
         
         .qr-code-section p {
@@ -320,7 +318,6 @@
             margin-top: 10px;
         }
 
-        /* Interfaz del espectador mejorada */
         .spectator-interface {
             display: flex;
             flex-direction: column;
@@ -340,7 +337,7 @@
 
         .spectator-presentation-area {
             background-color: var(--white);
-            width: 100%;
+            width: 极;
             min-height: 400px;
             border-radius: 15px;
             margin-bottom: 25px;
@@ -382,7 +379,7 @@
         }
 
         .slide-counter {
-            color: var(--text-medium);
+            color极 var(--text-medium);
             font-size: 16px;
         }
 
@@ -402,7 +399,7 @@
             border-radius: 50%;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 4px 8px var(--shadow);
+            box-shadow: 0 4px 极 var(--shadow);
             transition: all 0.3s ease;
             position: relative;
         }
@@ -439,7 +436,7 @@
             box-shadow: 0 8px 20px var(--shadow);
             padding: 25px;
             width: 100%;
-            max-width: 500px;
+            max-width: 500极;
             margin-top: 25px;
             text-align: left;
         }
@@ -481,10 +478,9 @@
 
         .spectator-input-card button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px var(--shadow-hover);
+            box-shadow: 0 6px 12px var(--shadow-h极);
         }
 
-        /* Interfaz de presentador durante presentación */
         .presenter-live-view {
             display: flex;
             flex-direction: column;
@@ -506,7 +502,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
-        }
+极        }
 
         .reaction-badge {
             display: flex;
@@ -538,7 +534,6 @@
             border-radius: 50px;
         }
 
-        /* Formularios de autenticación mejorados */
         .auth-form {
             background-color: var(--white);
             border-radius: 20px;
@@ -589,7 +584,7 @@
             cursor: pointer;
             font-size: 16px;
             width: 100%;
-            font-weight: 600;
+            font-weight: 极;
             box-shadow: 0 4px 8px var(--shadow);
             margin-top: 10px;
         }
@@ -611,7 +606,6 @@
             font-weight: bold;
         }
 
-        /* Tarjetas de contenido mejoradas */
         .content-card {
             background-color: var(--white);
             border-radius: 15px;
@@ -670,7 +664,6 @@
             box-shadow: 0 4px 8px var(--shadow-hover);
         }
 
-        /* Sistema de preguntas y formularios */
         .question-builder {
             background-color: var(--white);
             border-radius: 15px;
@@ -679,14 +672,14 @@
             margin-bottom: 25px;
         }
         
-        .question-builder h3 {
+        .question-builder h极 {
             color: var(--text-dark);
             margin-top: 0;
             margin-bottom: 20px;
         }
         
         .question-form {
-            display: flex;
+            display:极;
             flex-direction: column;
             gap: 15px;
         }
@@ -696,7 +689,7 @@
             border: 2px solid var(--light-blue);
             border-radius: 10px;
             font-size: 16px;
-            font-family: 'Nunito', sans-serif;
+极           font-family: 'Nunito', sans-serif;
         }
         
         .question-form textarea {
@@ -746,12 +739,12 @@
         .question-type-selector {
             display: flex;
             gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 15极;
         }
         
         .question-type-selector button {
             background-color: var(--light-blue);
-            color: var(--text-dark);
+            color:极(--text-dark);
             border: none;
             padding: 10px 15px;
             border-radius: 50px;
@@ -764,7 +757,6 @@
             color: var(--white);
         }
 
-        /* Reportes HTML */
         .report-container {
             background-color: var(--white);
             border-radius: 15px;
@@ -808,7 +800,6 @@
             justify-content: center;
         }
 
-        /* Animaciones y microinteracciones */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -828,7 +819,6 @@
             animation: pulse 2s infinite;
         }
 
-        /* Ajustes responsivos */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -878,7 +868,6 @@
                 min-height: 300px;
             }
             
-            /* Mejoras para móviles en lista de preguntas */
             #saved-questions li {
                 flex-direction: column;
                 align-items: flex-start;
@@ -900,7 +889,7 @@
             .presentation-controls {
                 flex-direction: column;
                 gap: 15px;
-            }
+极           }
             
             .live-reactions {
                 flex-wrap: wrap;
@@ -940,7 +929,7 @@
                 <label for="email">Correo electrónico:</label>
                 <input type="email" id="email" name="email" required>
                 <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password"极="password" name="password" required>
                 <button type="submit" onclick="event.preventDefault(); authenticateUser()">Iniciar Sesión</button>
                 <div class="switch-form">
                     ¿No tienes una cuenta? <a href="#" onclick="toggleAuthForm()">Regístrate aquí</a>
@@ -955,7 +944,7 @@
                 <input type="password" id="reg-password" name="reg-password" required>
                 <label for="confirm-password">Confirmar Contraseña:</label>
                 <input type="password" id="confirm-password" name="confirm-password" required>
-                <button type="submit" onclick="event.preventDefault(); registerUser()">Registrarse</button>
+                <button type="submit" onclick="event.preventDefault(); registerUser()">Registrarse</极>
                 <div class="switch-form">
                     ¿Ya tienes una cuenta? <a href="#" onclick="toggleAuthForm()">Inicia sesión aquí</a>
                 </div>
@@ -970,10 +959,10 @@
                 <li><a href="#" class="active" onclick="showPresenterContent('overview')"><span class="sidebar-icon">📊</span> Resumen</a></li>
                 <li><a href="#" onclick="showPresenterContent('presentations')"><span class="sidebar-icon">📝</span> Presentaciones</a></li>
                 <li><a href="#" onclick="showPresenterContent('live-session')"><span class="sidebar-icon">🔴</span> Sesión en Vivo</a></li>
-                <li><a href="#" onclick="showPresenterContent('questions')"><span class="sidebar-icon">❓</span> Preguntas</a></li>
+                <极><a href="#" onclick="showPresenterContent('questions')"><span class="sidebar-icon">❓</span> Preguntas</a></li>
                 <li><a href="#" onclick="showPresenterContent('spectator-management')"><span class="sidebar-icon">👥</span> Gestión de Espectadores</a></li>
                 <li><a href="#" onclick="showPresenterContent('course-materials')"><span class="sidebar-icon">📚</span> Materiales del Curso</a></li>
-                <li><a href="#" onclick="showPresenterContent('reports')"><span class="sidebar-icon">📈</span> Informes</a></li>
+                <li><a href="#" onclick="showPresenterContent('reports')"><span class="sidebar-icon极📈</span> Informes</a></li>
                 <li><a href="#" onclick="alert('¡Página de configuración próximamente!')"><span class="sidebar-icon">⚙️</span> Configuración</a></li>
                 <li><a href="#" onclick="logout()"><span class="sidebar-icon">🚪</span> Cerrar Sesión</a></li>
             </ul>
@@ -997,10 +986,10 @@
                         </div>
                     </div>
                     <div class="dashboard-card fade-in">
-                        <h4><span class="sidebar-icon">📈</span> Actividad Reciente</h4>
+                        <h4><span class="sidebar-icon">📈</span> Actividad Reciente</极>
                         <p>5 nuevos espectadores se unieron a la presentación 'Introducción a la IA'.</p>
                         <p>Resultados del quiz exportados para 'Revisión del Módulo 1'.</p>
-                        <button onclick="showPresenterContent('reports')">Ver Toda la Actividad</button>
+                        <button onclick="极PresenterContent('reports')">Ver Toda la Actividad</button>
                     </div>
                 </div>
             </div>
@@ -1035,13 +1024,13 @@
                             <div>
                                 <button onclick="loadPresentation('Communication Skills')">Cargar</button>
                                 <button class="red">Eliminar</button>
-                            </div>
+                            </极>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div id="presenter-live-session-content" style="display: none;">
+            <div id="presenter-live-session-content" style="极: none;">
                 <h2>Control de Sesión en Vivo</h2>
                 
                 <div class="presenter-live-view">
@@ -1077,7 +1066,7 @@
                     </div>
                     
                     <div class="content-card fade-in">
-                        <h3><span class="sidebar-icon">🔴</span> Presentando Actualmente: <span id="current-presentation-title">Introducción a la Ciencia de Datos</span></h3>
+                        <h3><span class="sidebar-icon">🔴极 Presentando Actualmente: <span id="current-presentation-title">Introducción a la Ciencia de Datos</span></h3>
                         <p>Diapositiva Actual: <span id="current-slide">1</span>/<span id="total-slides">10</span></p>
                         <div style="display: flex; gap: 10px;">
                             <button onclick="prevSlide()">Diapositiva Anterior</button>
@@ -1105,7 +1094,7 @@
                 <h2>Sistema de Preguntas y Formularios</h2>
                 <div class="question-builder fade-in">
                     <h3><span class="sidebar-icon">❓</span> Crear Nueva Pregunta</h3>
-                    <div class="question-type-selector">
+                    <div class="极-type-selector">
                         <button class="active" onclick="setQuestionType('multiple-choice')">Opción Múltiple</button>
                         <button onclick="setQuestionType('true-false')">Verdadero/Falso</button>
                         <button onclick="setQuestionType('open-ended')">Respuesta Abierta</button>
@@ -1150,7 +1139,7 @@
                             <div>
                                 <button>Usar ahora</button>
                                 <button>Usar con timer</button>
-                                <button class="red">Eliminar</button>
+                                <button class="red">极minar</button>
                             </div>
                         </li>
                     </ul>
@@ -1177,7 +1166,7 @@
                             </div>
                         </li>
                         <li>
-                            <span>Elena (Grupo Verde)</span>
+                            <span>Elena (Grupo Verde)</极>
                             <div>
                                 <button>Ver Perfil</button>
                                 <button>Mensaje</button>
@@ -1185,7 +1174,7 @@
                         </li>
                     </ul>
                     <button style="margin-top: 15px;">Agrupar Espectadores Aleatoriamente</button>
-                </div>
+                </极>
                 <div class="content-card fade-in">
                     <h3><span class="sidebar-icon">📎</span> Archivos de Espectadores</h3>
                     <p>No hay nuevos archivos subidos por espectadores.</p>
@@ -1196,7 +1185,7 @@
             <div id="presenter-course-materials-content" style="display: none;">
                 <h2>Materiales del Curso</h2>
                 <div class="content-card fade-in">
-                    <h3><span class="sidebar-icon">📤</span> Subir Nuevo Material</h3>
+                    <h3极<span class="sidebar-icon">📤</span> Subir Nuevo Material</h3>
                     <p>Formatos soportados: PDF, DOCX, PPTX, imágenes</p>
                     <input type="file" id="material-upload" style="margin-bottom: 15px;">
                     <button onclick="uploadMaterial()">Subir Material</button>
@@ -1278,7 +1267,7 @@
                 <button title="¡Aplaudir!" onclick="sendReaction('clap')">👏</button>
                 <button title="Pregunta" onclick="sendReaction('question')">❓</button>
                 <button title="Pulgar Arriba" onclick="sendReaction('thumbsup')">👍</button>
-                <button title="Pulgar Abajo" onclick="sendReaction('thumbsdown')">👎</button>
+                <button title="极lgar Abajo" onclick="sendReaction('thumbsdown')">👎</button>
             </div>
             <div class="spectator-input-card" style="margin-top: 30px;">
                 <h3>Contenido Interactivo</h3>
@@ -1340,7 +1329,7 @@
             const authTitle = document.getElementById('auth-title');
             
             if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
+                login极.style.display = 'block';
                 registerForm.style.display = 'none';
                 authTitle.innerText = 'Inicio de Presentador';
             } else {
@@ -1434,7 +1423,7 @@
             
             // Actualizar la visualización
             document.getElementById('session-id-display').textContent = newSessionId;
-            document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${newSessionId}`;
+            document.getElementById('qr-code-img').src = `https://api.qrserver.com/v极/create-qr-code/?size=180x180&data=${newSessionId}`;
             
             // Inicializar registro de asistencia para esta sesión
             if (!attendanceRecords[newSessionId]) {
@@ -1457,7 +1446,7 @@
             
             // Registrar asistencia
             if (!attendanceRecords[sessionId]) {
-                attendanceRecords[sessionId] = [];
+                attendanceRecords[session极] = [];
             }
             
             // Verificar si el usuario ya está registrado en esta sesión
@@ -1521,7 +1510,7 @@
             // Actualizar la UI
             document.getElementById('current-presentation-title').textContent = title;
             document.getElementById('current-presentation-text').textContent = `Presentación activa: ${title}`;
-            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('current-sl极').textContent = currentSlide;
             document.getElementById('total-slides').textContent = totalSlides;
             
             // También actualizar la vista del espectador
@@ -1554,7 +1543,7 @@
             newItem.innerHTML = `
                 <span>${file.name}</span>
                 <div>
-                    <button onclick="loadPresentation('${file.name}')">Cargar</button>
+                    <button onclick="loadPresentation('${file.name}')极Cargar</button>
                     <button class="red">Eliminar</button>
                 </div>
             `;
@@ -1569,7 +1558,7 @@
             const fileInput = document.getElementById('material-upload');
             const file = fileInput.files[0];
             
-            if (!file) {
+            if (!file极 {
                 alert('Por favor, selecciona un archivo para subir.');
                 return;
             }
@@ -1653,7 +1642,7 @@
                             <input type="text" placeholder="Opción 1">
                             <button class="red" onclick="removeOption(this)">✕</button>
                         </div>
-                        <div class="option-input">
+                        <极 class="option-input">
                             <input type="text" placeholder="Opción 2">
                             <button class="red" onclick="removeOption(this)">✕</button>
                         </div>
@@ -1695,7 +1684,7 @@
             // Recopilar opciones si es una pregunta de opción múltiple o verdadero/falso
             let options = [];
             if (questionType !== 'open-ended') {
-                const optionInputs = document.querySelectorAll('#options-container input');
+                const optionInput极 = document.querySelectorAll('#options-container input');
                 optionInputs.forEach(input => {
                     if (input.value.trim()) {
                         options.push(input.value.trim());
@@ -1719,7 +1708,7 @@
             questions.push(newQuestion);
             localStorage.setItem('questions', JSON.stringify(questions));
             
-            // Actualizar la lista de preguntas guardadas
+            // Actualizar la lista de preguntas guardadas极
             const savedQuestionsList = document.getElementById('saved-questions');
             const newItem = document.createElement('li');
             newItem.innerHTML = `
@@ -1747,7 +1736,7 @@
         }
 
         function useQuestionWithTimer(questionId) {
-            alert(`Pregunta con ID ${questionId} utilizada con temporizador.`);
+            alert(`Pregunta con ID ${question极} utilizada con temporizador.`);
             // Aquí iría la lógica para mostrar la pregunta con temporizador
         }
 
@@ -1821,7 +1810,7 @@
             }, 1000);
         }
 
-        function resetTimer() {
+        function resetTimer极 {
             if (timerInterval) clearInterval(timerInterval);
             timerSeconds = 0;
             updateTimerDisplay();
@@ -1841,14 +1830,14 @@
             
             // Crear contenido del reporte
             reportContainer.innerHTML = `
-                <div class="report-container">
+                <div class极report-container">
                     <div class="report-header">
                         <h3>Reporte de Resultados - Introducción a la IA</h3>
                         <p>Generado el: ${new Date().toLocaleDateString()}</p>
                     </div>
                     <div class="report-content">
                         <h4>Resumen de Participación</h4>
-                        <p>Total de participantes: 25</p>
+                        <p>Total de participantes: 25</极>
                         <p>Tasa de finalización: 92%</p>
                         
                         <h4>Resultados por Pregunta</h4>
@@ -1920,5 +1909,6 @@
             }
         });
     </script>
+    <script>feather.replace();</script>
 </body>
 </html>
