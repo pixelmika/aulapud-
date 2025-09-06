@@ -1371,6 +1371,11 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
+            if (!email || !password) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+            
             // Verificación básica (en un caso real, esto se haría contra una base de datos)
             if (users[email] && users[email].password === password) {
                 currentUser = users[email];
@@ -1386,6 +1391,11 @@
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!name || !email || !password || !confirmPassword) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
             
             if (password !== confirmPassword) {
                 alert('Las contraseñas no coinciden.');
@@ -1810,7 +1820,7 @@
             }, 1000);
         }
 
-        function resetTimer极 {
+        function resetTimer() {
             if (timerInterval) clearInterval(timerInterval);
             timerSeconds = 0;
             updateTimerDisplay();
@@ -1909,6 +1919,23 @@
             }
         });
     </script>
-    <script>feather.replace();</script>
+    <script>
+        // Reemplazar iconos de feather
+        feather.replace();
+        
+        // Agregar event listeners para todos los botones
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                const onclick = e.target.getAttribute('onclick');
+                if (onclick) {
+                    try {
+                        eval(onclick);
+                    } catch (error) {
+                        console.error('Error ejecutando onclick:', error);
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
