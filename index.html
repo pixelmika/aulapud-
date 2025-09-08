@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script>
+  // pdf.js worker (requerido)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AulaPudú - Plataforma Interactiva de Presentaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Nueva paleta de colores pastel */
+        :root {
+            --primary-blue: #A7C7E7;
+            --primary-green: #A8E6CF;
+            --light-blue: #D4E7F7;
+            --light-green: #D4F3E6;
+            --light-yellow: #FFF2CC;
+            --light-pink: #FFD6E0;
+            --white: #FFFFFF;
+            --text-dark: #5A5A5A;
+            --text-medium: #7E7E7E;
+            --text-light: #A0A0A0;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --reaction-active: #A7C7E7;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-blue);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Encabezado mejorado */
+        header {
+            background-color: var(--white);
+            padding: 15px 30px;
+            box-shadow: 0 2px 15px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 0 15px 15px;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header .logo-icon {
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        header .logo h1 {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        nav button {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        nav button:hover { transform: translateY(-3px); box-shadow: 0 6px 12px var(--shadow-hover); }
+
+        /* Contenedor principal */
+        .container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
+        /* Tarjetas */
+        .card {
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .card h2 { color: var(--text-dark); margin-bottom: 25px; font-size: 28px; font-weight: 700; }
+        .card p { color: var(--text-medium); margin-bottom: 25px; }
+        .card .option-button {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: calc(100% - 40px); padding: 18px; margin: 0 auto 15px auto;
+            background-color: var(--light-green); color: var(--text-dark); border-radius: 15px;
+            font-size: 18px; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 8px var(--shadow);
+        }
+        .card .option-button:hover { transform: translateY(-3px); box-shadow: 0 6px 12px var(--shadow-hover); background-color: var(--primary-green); }
+
+        /* Dashboard presentador */
+        .presenter-dashboard { display: flex; flex: 1; background-color: var(--light-blue); }
+        .sidebar {
+            width: 280px; background: linear-gradient(180deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+            color: var(--white); padding: 25px 15px; box-shadow: 2px 0 15px var(--shadow); border-radius: 0 20px 20px 0;
+        }
+        .sidebar h3 {
+            margin-top: 0; color: var(--text-dark); margin-bottom: 30px; text-align: center; font-size: 20px; font-weight: 700;
+            padding-bottom: 15px; border-bottom: 2px solid var(--white);
+        }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar ul li { margin-bottom: 12px; }
+        .sidebar ul li a {
+            color: var(--text-dark); text-decoration: none; font-size: 17px; display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; border-radius: 12px;
+        }
+        .sidebar ul li a:hover, .sidebar ul li a.active { background-color: var(--white); box-shadow: 0 4px 8px var(--shadow); transform: translateX(5px); }
+
+        .sidebar-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+
+        .main-content { flex: 1; padding: 30px; background-color: var(--light-blue); overflow-y: auto; }
+        .main-content h2 { color: var(--text-dark); margin-bottom: 25px; font-size: 28px; font-weight: 700; padding-bottom: 10px; border-bottom: 2px solid var(--primary-blue); }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .dashboard-card { background-color: var(--white); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow); padding: 25px; text-align: left; }
+        .dashboard-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px var(--shadow-hover); }
+        .dashboard-card h4 { margin-top: 0; color: var(--text-dark); font-size: 20px; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .dashboard-card p { font-size: 16px; line-height: 1.6; color: var(--text-medium); }
+        .dashboard-card button { background-color: var(--primary-blue); color: var(--white); border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; margin-top: 15px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .dashboard-card button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px var(--shadow-hover); }
+
+        .qr-code-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .qr-code-section img { width: 180px; height: 180px; border: 1px solid var(--light-blue); margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 10px var(--shadow); }
+        .qr-code-section p { font-size: 18px; color: var(--text-medium); margin: 10px 0; }
+        .session-id { font-weight: 700; color: var(--text-dark); background-color: var(--light-yellow); padding: 8px 15px; border-radius: 50px; margin-top: 10px; }
+
+        /* Interfaz del espectador */
+        .spectator-interface { display: flex; flex-direction: column; align-items: center; padding: 20px; text-align: center; width: 100%; max-width: 800px; margin: auto; }
+        .spectator-interface h2 { color: var(--text-dark); margin-bottom: 20px; font-weight: 700; }
+        .spectator-presentation-area {
+            background-color: var(--white); width: 100%; min-height: 400px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; color: var(--text-medium); font-size: 24px; box-shadow: 0 5px 15px var(--shadow); overflow: hidden; position: relative;
+        }
+        .slide-container { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .slide-nav { display: flex; justify-content: space-between; width: 100%; margin-top: 15px; }
+        .slide-nav button { background-color: var(--primary-blue); color: var(--white); border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; }
+        .slide-counter { color: var(--text-medium); font-size: 16px; }
+
+        .spectator-interactions { display: flex; justify-content: space-around; width: 100%; margin-top: 20px; }
+        .spectator-interactions button {
+            background-color: var(--white); color: var(--text-dark); border: none; width: 55px; height: 55px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 8px var(--shadow); position: relative;
+        }
+        .spectator-interactions button.reaction-active { background-color: var(--reaction-active); transform: scale(1.1); }
+        .spectator-interactions button:hover { transform: translateY(-5px) scale(1.1); box-shadow: 0 8px 15px var(--shadow-hover); }
+        .reaction-count { position: absolute; top: -8px; right: -8px; background-color: var(--primary-blue); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        .spectator-input-card { background-color: var(--white); border-radius: 15px; box-shadow: 0 8px 20px var(--shadow); padding: 25px; width: 100%; max-width: 500px; margin-top: 25px; text-align: left; }
+        .spectator-input-card label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--text-dark); }
+        .spectator-input-card input[type="text"] { width: calc(100% - 20px); padding: 12px; margin-bottom: 18px; border: 2px solid var(--light-blue); border-radius: 10px; font-size: 16px; font-family: 'Nunito', sans-serif; }
+        .spectator-input-card input[type="text"]:focus { border-color: var(--primary-blue); outline: none; }
+        .spectator-input-card button { background-color: var(--primary-blue); color: var(--white); border: none; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 16px; width: 100%; font-weight: 600; box-shadow: 0 4px 8px var(--shadow); }
+        .spectator-input-card button:hover { transform: translateY(-3px); box-shadow: 0 6px 12px var(--shadow-hover); }
+
+        /* Presentador en vivo */
+        .presenter-live-view { display: flex; flex-direction: column; width: 100%; gap: 20px; }
+        .presentation-controls { display: flex; justify-content: space-between; align-items: center; background-color: var(--white); padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px var(--shadow); }
+        .live-reactions { display: flex; gap: 15px; align-items: center; }
+        .reaction-badge { display: flex; flex-direction: column; align-items: center; padding: 10px; background-color: var(--light-blue); border-radius: 10px; min-width: 60px; }
+        .reaction-badge .count { font-size: 18px; font-weight: bold; margin-top: 5px; }
+        .timer-section { display: flex; align-items: center; gap: 10px; }
+        .timer-display { font-size: 18px; font-weight: bold; background-color: var(--light-green); padding: 8px 15px; border-radius: 50px; }
+
+        /* Auth */
+        .auth-form { background-color: var(--white); border-radius: 20px; box-shadow: 0 8px 20px var(--shadow); padding: 35px; width: 100%; max-width: 450px; text-align: left; }
+        .auth-form h2 { text-align: center; margin-bottom: 30px; color: var(--text-dark); font-weight: 700; }
+        .auth-form label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--text-dark); }
+        .auth-form input[type="email"], .auth-form input[type="password"], .auth-form input[type="text"] {
+            width: calc(100% - 20px); padding: 12px; margin-bottom: 18px; border: 2px solid var(--light-blue); border-radius: 10px; font-size: 16px; font-family: 'Nunito', sans-serif;
+        }
+        .auth-form input:focus { border-color: var(--primary-blue); outline: none; }
+        .auth-form button { background-color: var(--primary-blue); color: var(--white); border: none; padding: 14px 24px; border-radius: 50px; cursor: pointer; font-size: 16px; width: 100%; font-weight: 600; margin-top: 10px; }
+        .auth-form .switch-form { text-align: center; margin-top: 20px; color: var(--text-medium); }
+        .auth-form .switch-form a { color: var(--primary-blue); text-decoration: none; font-weight: bold; }
+
+        /* Tarjetas de contenido */
+        .content-card { background-color: var(--white); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow); padding: 25px; margin-bottom: 25px; }
+        .content-card h3 { color: var(--text-dark); margin-top: 0; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .content-card ul { list-style: none; padding: 0; }
+        .content-card ul li { padding: 12px 0; border-bottom: 1px solid var(--light-blue); display: flex; justify-content: space-between; align-items: center; }
+        .content-card ul li:last-child { border-bottom: none; }
+        .content-card ul li button { background-color: var(--primary-blue); color: var(--white); border: none; padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 14px; font-weight: 600; margin-left: 8px; }
+        .content-card ul li button.red { background-color: var(--light-pink); color: var(--text-dark); }
+
+        /* Preguntas */
+        .question-builder { background-color: var(--white); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow); padding: 25px; margin-bottom: 25px; }
+        .question-form { display: flex; flex-direction: column; gap: 15px; }
+        .question-form input, .question-form textarea { padding: 12px; border: 2px solid var(--light-blue); border-radius: 10px; font-size: 16px; font-family: 'Nunito', sans-serif; }
+        .question-form textarea { min-height: 100px; resize: vertical; }
+        .options-container { display: flex; flex-direction: column; gap: 10px; }
+        .option-input { display: flex; align-items: center; gap: 10px; }
+        .option-input input { flex: 1; }
+        .add-option { background-color: var(--light-green); color: var(--text-dark); border: none; padding: 8px 15px; border-radius: 50px; cursor: pointer; font-weight: 600; align-self: flex-start; }
+        .question-preview { background-color: var(--light-blue); border-radius: 10px; padding: 15px; margin-top: 20px; }
+        .question-type-selector { display: flex; gap: 15px; margin-bottom: 15px; }
+        .question-type-selector button { background-color: var(--light-blue); color: var(--text-dark); border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-weight: 600; }
+        .question-type-selector button.active { background-color: var(--primary-blue); color: var(--white); }
+
+        /* Reportes */
+        .report-container { background-color: var(--white); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow); padding: 25px; margin-bottom: 25px; }
+        .report-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--light-blue); }
+        .report-content { margin-bottom: 25px; }
+        .report-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .report-table th, .report-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--light-blue); }
+        .report-table th { background-color: var(--light-blue); color: var(--text-dark); font-weight: 700; }
+        .report-actions { display: flex; gap: 15px; justify-content: center; }
+
+        /* Animaciones y responsive */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 15px 20px; text-align: center; }
+            header .logo { margin-bottom: 15px; }
+            .presenter-dashboard { flex-direction: column; }
+            .sidebar { width: 100%; padding: 20px; border-radius: 0; }
+            .main-content { padding: 20px; }
+            .card, .auth-form { max-width: 95%; padding: 25px; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .spectator-interactions { flex-wrap: wrap; gap: 10px; }
+            .spectator-interactions button { width: 50px; height: 50px; margin: 5px; }
+            .spectator-presentation-area { min-height: 300px; }
+            #saved-questions li { flex-direction: column; align-items: flex-start; }
+            #saved-questions li > div { margin-top: 10px; display: flex; gap: 10px; width: 100%; justify-content: flex-end; }
+            #saved-questions li button { flex: 1; margin-left: 0; }
+            .presentation-controls { flex-direction: column; gap: 15px; }
+            .live-reactions { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">📚</div>
+            <h1>AulaPudú</h1>
+        </div>
+        <nav>
+            <button onclick="showPage('welcome')">Inicio</button>
+        </nav>
+    </header>
+
+    <div id="welcome" class="container">
+        <div class="card fade-in">
+            <h2>Bienvenido a AulaPudú</h2>
+            <p>Selecciona tu rol para comenzar:</p>
+            <button class="option-button" onclick="showPage('presenter-login')">
+                <span class="sidebar-icon">👨‍🏫</span> Soy Presentador
+            </button>
+            <button class="option-button" onclick="showPage('spectator-join')">
+                <span class="sidebar-icon">👨‍🎓</span> Soy Espectador
+            </button>
+        </div>
+    </div>
+
+    <div id="presenter-login" class="container" style="display: none;">
+        <div class="auth-form fade-in">
+            <h2 id="auth-title">Inicio de Presentador</h2>
+            <form id="login-form">
+                <label for="email">Correo electrónico:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="submit" onclick="event.preventDefault(); authenticateUser()">Iniciar Sesión</button>
+                <div class="switch-form">
+                    ¿No tienes una cuenta? <a href="#" onclick="toggleAuthForm()">Regístrate aquí</a>
+                </div>
+            </form>
+            <form id="register-form" style="display: none;">
+                <label for="reg-name">Nombre completo:</label>
+                <input type="text" id="reg-name" name="reg-name" required>
+                <label for="reg-email">Correo electrónico:</label>
+                <input type="email" id="reg-email" name="reg-email" required>
+                <label for="reg-password">Contraseña:</label>
+                <input type="password" id="reg-password" name="reg-password" required>
+                <label for="confirm-password">Confirmar Contraseña:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+                <button type="submit" onclick="event.preventDefault(); registerUser()">Registrarse</button>
+                <div class="switch-form">
+                    ¿Ya tienes una cuenta? <a href="#" onclick="toggleAuthForm()">Inicia sesión aquí</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="presenter-dashboard" class="presenter-dashboard" style="display: none;">
+        <div class="sidebar">
+            <h3>Menú del Presentador</h3>
+            <ul>
+                <li><a href="#" class="active" onclick="showPresenterContent('overview')"><span class="sidebar-icon">📊</span> Resumen</a></li>
+                <li><a href="#" onclick="showPresenterContent('presentations')"><span class="sidebar-icon">📝</span> Presentaciones</a></li>
+                <li><a href="#" onclick="showPresenterContent('live-session')"><span class="sidebar-icon">🔴</span> Sesión en Vivo</a></li>
+                <li><a href="#" onclick="showPresenterContent('questions')"><span class="sidebar-icon">❓</span> Preguntas</a></li>
+                <li><a href="#" onclick="showPresenterContent('spectator-management')"><span class="sidebar-icon">👥</span> Gestión de Espectadores</a></li>
+                <li><a href="#" onclick="showPresenterContent('course-materials')"><span class="sidebar-icon">📚</span> Materiales del Curso</a></li>
+                <li><a href="#" onclick="showPresenterContent('reports')"><span class="sidebar-icon">📈</span> Informes</a></li>
+                <li><a href="#" onclick="alert('¡Página de configuración próximamente!')"><span class="sidebar-icon">⚙️</span> Configuración</a></li>
+                <li><a href="#" onclick="logout()"><span class="sidebar-icon">🚪</span> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div id="presenter-overview-content">
+                <h2>Resumen del Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card fade-in">
+                        <h4><span class="sidebar-icon">📊</span> Presentación Actual</h4>
+                        <p id="current-presentation-text">No hay presentación activa. Inicia una nueva o continúa desde tu biblioteca.</p>
+                        <button onclick="showPresenterContent('presentations')">Gestionar Presentaciones</button>
+                    </div>
+                    <div class="dashboard-card fade-in">
+                        <h4><span class="sidebar-icon">🔴</span> Estado de Sesión en Vivo</h4>
+                        <div class="qr-code-section">
+                            <img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=AULAPUDU-12345" alt="Código QR para unirse">
+                            <p>Escanear para unirse:</p>
+                            <div class="session-id" id="session-id-display">AULAPUDU-12345</div>
+                            <button onclick="generateNewSession()">Generar Nuevo Código QR</button>
+                        </div>
+                    </div>
+                    <div class="dashboard-card fade-in">
+                        <h4><span class="sidebar-icon">📈</span> Actividad Reciente</h4>
+                        <p>5 nuevos espectadores se unieron a la presentación 'Introducción a la IA'.</p>
+                        <p>Resultados del quiz exportados para 'Revisión del Módulo 1'.</p>
+                        <button onclick="showPresenterContent('reports')">Ver Toda la Actvidad</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="presenter-presentations-content" style="display: none;">
+                <h2>Mis Presentaciones</h2>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📤</span> Subir Nueva Presentación</h3>
+                    <p>Formatos soportados: PDF, PowerPoint (PPT/PPTX)</p>
+                    <input type="file" id="presentation-upload" accept=".pdf,.ppt,.pptx" style="margin-bottom: 15px;">
+                    <button onclick="uploadPresentation()">Subir Presentación</button>
+                </div>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📁</span> Presentaciones Disponibles</h3>
+                    <ul id="presentations-list">
+                        <li>
+                            <span>Introducción a la Ciencia de Datos</span>
+                            <div>
+                                <button onclick="loadPresentation('Introduction to Data Science')">Cargar</button>
+                                <button class="red">Eliminar</button>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Fundamentos de Desarrollo Web (PDF)</span>
+                            <div>
+                                <button onclick="loadPresentation('Web Development Basics')">Cargar</button>
+                                <button class="red">Eliminar</button>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Habilidades de Comunicación Efectiva (Video)</span>
+                            <div>
+                                <button onclick="loadPresentation('Communication Skills')">Cargar</button>
+                                <button class="red">Eliminar</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="presenter-live-session-content" style="display: none;">
+                <h2>Control de Sesión en Vivo</h2>
+                <div class="presenter-live-view">
+                    <div class="presentation-controls">
+                        <div class="live-reactions">
+                            <div class="reaction-badge">
+                                <span>❤️</span>
+                                <span class="count" id="count-love">0</span>
+                            </div>
+                            <div class="reaction-badge">
+                                <span>👏</span>
+                                <span class="count" id="count-clap">0</span>
+                            </div>
+                            <div class="reaction-badge">
+                                <span>❓</span>
+                                <span class="count" id="count-question">0</span>
+                            </div>
+                            <div class="reaction-badge">
+                                <span>👍</span>
+                                <span class="count" id="count-thumbsup">0</span>
+                            </div>
+                            <div class="reaction-badge">
+                                <span>👎</span>
+                                <span class="count" id="count-thumbsdown">0</span>
+                            </div>
+                        </div>
+                        <div class="timer-section">
+                            <span class="timer-display" id="timer-display">00:00</span>
+                            <button onclick="startTimer()">Iniciar Timer</button>
+                            <button onclick="resetTimer()">Reiniciar</button>
+                        </div>
+                    </div>
+                    <div class="content-card fade-in">
+                        <h3><span class="sidebar-icon">🔴</span> Presentando Actualmente: <span id="current-presentation-title">Introducción a la Ciencia de Datos</span></h3>
+                        <p>Diapositiva Actual: <span id="current-slide">1</span>/<span id="total-slides">10</span></p>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="prevSlide()">Diapositiva Anterior</button>
+                            <button onclick="nextSlide()">Siguiente Diapositiva</button>
+                            <button style="background-color: var(--light-pink); color: var(--text-dark);" onclick="endSession()">Finalizar Sesión</button>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card fade-in">
+                            <h4><span class="sidebar-icon">📊</span> Encuestas y Quizzes</h4>
+                            <p>Crea encuestas interactivas y quizzes para tu audiencia.</p>
+                            <button onclick="showPresenterContent('questions')">Crear Nueva Pregunta</button>
+                        </div>
+                        <div class="dashboard-card fade-in">
+                            <h4><span class="sidebar-icon">👥</span> Espectadores Conectados</h4>
+                            <p id="connected-spectators">0 espectadores activos</p>
+                            <button onclick="showPresenterContent('spectator-management')">Gestionar Espectadores</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="presenter-questions-content" style="display: none;">
+                <h2>Sistema de Preguntas y Formularios</h2>
+                <div class="question-builder fade-in">
+                    <h3><span class="sidebar-icon">❓</span> Crear Nueva Pregunta</h3>
+                    <div class="question-type-selector">
+                        <button class="active" onclick="setQuestionType('multiple-choice')">Opción Múltiple</button>
+                        <button onclick="setQuestionType('true-false')">Verdadero/Falso</button>
+                        <button onclick="setQuestionType('open-ended')">Respuesta Abierta</button>
+                    </div>
+                    <div class="question-form">
+                        <input type="text" id="question-title" placeholder="Escribe tu pregunta aquí">
+                        <div id="options-container" class="options-container">
+                            <div class="option-input">
+                                <input type="text" placeholder="Opción 1">
+                                <button class="red" onclick="removeOption(this)">✕</button>
+                            </div>
+                            <div class="option-input">
+                                <input type="text" placeholder="Opción 2">
+                                <button class="red" onclick="removeOption(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-option" onclick="addOption()">+ Añadir Opción</button>
+                        <button class="option-button" onclick="saveQuestion()" style="width: 100%; margin-top: 15px;">
+                            <span class="sidebar-icon">💾</span> Guardar Pregunta
+                        </button>
+                    </div>
+                </div>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📋</span> Preguntas Guardadas</h3>
+                    <ul id="saved-questions">
+                        <li>
+                            <div>
+                                <strong>¿Cuál es la capital de Francia?</strong>
+                                <small>Tipo: Opción múltiple</small>
+                            </div>
+                            <div>
+                                <button>Usar ahora</button>
+                                <button>Usar con timer</button>
+                                <button class="red">Eliminar</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>Verdadero o Falso: HTML es un lenguaje de programación</strong>
+                                <small>Tipo: Verdadero/Falso</small>
+                            </div>
+                            <div>
+                                <button>Usar ahora</button>
+                                <button>Usar con timer</button>
+                                <button class="red">Eliminar</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="presenter-spectator-management-content" style="display: none;">
+                <h2>Gestión de Espectadores</h2>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">👥</span> Espectadores Conectados (<span id="active-spectators">0</span> Activos)</h3>
+                    <ul id="spectators-list"></ul>
+                    <button style="margin-top: 15px;">Agrupar Espectadores Aleatoriamente</button>
+                </div>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📎</span> Archivos de Espectadores</h3>
+                    <p>No hay nuevos archivos subidos por espectadores.</p>
+                    <button>Ver Todos los Archivos</button>
+                </div>
+            </div>
+
+            <div id="presenter-course-materials-content" style="display: none;">
+                <h2>Materiales del Curso</h2>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📤</span> Subir Nuevo Material</h3>
+                    <p>Formatos soportados: PDF, DOCX, PPTX, imágenes</p>
+                    <input type="file" id="material-upload" style="margin-bottom: 15px;">
+                    <button onclick="uploadMaterial()">Subir Material</button>
+                </div>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📚</span> Material de Estudio Disponible</h3>
+                    <ul id="materials-list">
+                        <li><span>Apuntes de Clase - Capítulo 1 (PDF)</span><button>Descargar</button></li>
+                        <li><span>Tarea 1 (DOCX)</span><button>Descargar</button></li>
+                        <li><span>Video Complementario: Temas Avanzados</span><button>Ver</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="presenter-reports-content" style="display: none;">
+                <h2>Informes y Analíticas</h2>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">📝</span> Resultados de Quiz: 'Intro a IA'</h3>
+                    <p>Resumen de respuestas y datos de participantes.</p>
+                    <button onclick="generateHTMLReport()">Generar Reporte HTML</button>
+                </div>
+                <div class="content-card fade-in">
+                    <h3><span class="sidebar-icon">✅</span> Reporte de Asistencia: Última Sesión</h3>
+                    <p>Registros detallados de asistencia incluyendo tiempos de conexión.</p>
+                    <button onclick="viewAttendance()">Ver Asistencia</button>
+                </div>
+                <div class="content-card fade-in" id="attendance-report" style="display: none;">
+                    <h3><span class="sidebar-icon">👥</span> Lista de Asistencia</h3>
+                    <div id="attendance-list"></div>
+                </div>
+                <div id="html-report-container" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="spectator-join" class="container" style="display: none;">
+        <div class="spectator-input-card fade-in">
+            <h2>Unirse a una Presentación</h2>
+            <p>Escanee el código QR o ingrese el ID de sesión para unirse.</p>
+            <label for="session-id">ID de Sesión:</label>
+            <input type="text" id="session-id-input" placeholder="ej. AULAPUDU-12345" required>
+            <label for="spectator-name">Tu Nombre:</label>
+            <input type="text" id="spectator-name" placeholder="Ingresa tu nombre" required>
+            <button onclick="event.preventDefault(); joinSession()">Unirse a la Sesión</button>
+        </div>
+    </div>
+
+    <div id="spectator-interface" class="container" style="display: none;">
+        <div class="spectator-interface">
+            <h2>Presentación en Vivo: <span id="spectator-presentation-title">Introducción a la Ciencia de Datos</span></h2>
+            <div class="spectator-presentation-area">
+                <div class="slide-container">
+                    <div id="current-slide-content">
+                        <h3>Bienvenido a la Presentación</h3>
+                        <p>La presentación comenzará shortly...</p>
+                    </div>
+                    <div class="slide-nav">
+                        <button onclick="sendReaction('prev')">Anterior</button>
+                        <div class="slide-counter">Diapositiva <span id="spectator-slide-number">1</span> de <span id="spectator-total-slides">10</span></div>
+                        <button onclick="sendReaction('next')">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+            <div class="spectator-interactions">
+                <button title="¡Me encanta!" onclick="sendReaction('love')">❤️</button>
+                <button title="¡Aplaudir!" onclick="sendReaction('clap')">👏</button>
+                <button title="Pregunta" onclick="sendReaction('question')">❓</button>
+                <button title="Pulgar Arriba" onclick="sendReaction('thumbsup')">👍</button>
+                <button title="Pulgar Abajo" onclick="sendReaction('thumbsdown')">👎</button>
+            </div>
+            <div class="spectator-input-card" style="margin-top: 30px;">
+                <h3>Contenido Interactivo</h3>
+                <p>Participa en encuestas, responde preguntas o sube archivos.</p>
+                <button onclick="answerQuestion()">Responder Pregunta</button>
+                <button style="margin-top: 10px;">Subir Archivo al Presentador</button>
+                <button style="margin-top: 10px;">Descargar Material de Estudio</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========= SUPABASE =========
+        // Reemplaza por tus credenciales reales:
+        const SUPABASE_URL = "https://kcmxanjadpriphneygtx.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtjbXhhbmphZHByaXBobmV5Z3R4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyOTU0ODMsImV4cCI6MjA3Mjg3MTQ4M30.J9tJn1pjdUHlFfTPpqWslWLs16CTs22IZiEgCjOMbGY";
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========= ESTADO LOCAL =========
+        let currentSessionCode = 'AULAPUDU-12345';
+        let currentUser = null;
+        let currentPresentation = null;
+        let currentSlide = 1;
+        let totalSlides = 10;
+
+        let questionType = 'multiple-choice';
+        let reactionCounts = { love:0, clap:0, question:0, thumbsup:0, thumbsdown:0 };
+        let timerInterval = null, timerSeconds = 0;
+
+        // Realtime (canal + presencia)
+        let rt = { chan: null, sessionId: null, presenceKey: null };
+
+        // ========= NAVEGACIÓN =========
+        function showPage(pageId) {
+            document.querySelectorAll('.container, .presenter-dashboard').forEach(p => p.style.display = 'none');
+            document.getElementById(pageId).style.display = 'flex';
+            if (pageId === 'presenter-dashboard') showPresenterContent('overview');
+            if (pageId === 'presenter-dashboard' && document.getElementById('presenter-reports-content').style.display !== 'none') {
+                updateAttendanceReport();
+            }
+        }
+        function toggleAuthForm(){
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const authTitle = document.getElementById('auth-title');
+            const isLogin = loginForm.style.display !== 'none';
+            loginForm.style.display = isLogin ? 'none' : 'block';
+            registerForm.style.display = isLogin ? 'block' : 'none';
+            authTitle.innerText = isLogin ? 'Registro de Presentador' : 'Inicio de Presentador';
+        }
+        function showPresenterContent(contentId){
+            document.querySelectorAll('#presenter-dashboard .main-content > div').forEach(s => s.style.display = 'none');
+            document.getElementById('presenter-' + contentId + '-content').style.display = 'block';
+            document.querySelectorAll('.sidebar ul li a').forEach(a => a.classList.remove('active'));
+            const active = document.querySelector(`.sidebar ul li a[onclick*="${contentId}"]`);
+            if (active) active.classList.add('active');
+            if (contentId === 'reports') updateAttendanceReport();
+        }
+
+        // ========= AUTH =========
+        async function authenticateUser(){
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const { data, error } = await supa.auth.signInWithPassword({ email, password });
+            if (error){
+                console.error('[signIn]', error);
+                const msg = /email.*confirm/i.test(error.message)
+                    ? 'Tu email no está confirmado aún. Revisa tu bandeja.'
+                    : 'Credenciales incorrectas: ' + error.message;
+                return alert(msg);
+            }
+            currentUser = data.user;
+            showPage('presenter-dashboard');
+        }
+
+        async function registerUser(){
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('confirm-password').value;
+
+            if (password !== confirm) return alert('Las contraseñas no coinciden.');
+            if (!name || !email || !password) return alert('Completa todos los campos.');
+
+            const { data, error } = await supa.auth.signUp({
+                email, password, options: { data: { name } }
+            });
+            if (error){
+                console.error('[signUp]', error);
+                return alert(
+                    /email.*confirm/i.test(error.message)
+                        ? 'Debes confirmar tu correo antes de iniciar sesión.'
+                        : 'No se pudo registrar: ' + error.message
+                );
+            }
+
+            const userId = data.user?.id;
+            if (userId){
+                // Upsert evita fallo si el perfil ya existía
+                const { error: upErr } = await supa
+                    .from('profiles')
+                    .upsert({ id: userId, name }, { onConflict: 'id' });
+                if (upErr) console.warn('[profiles upsert]', upErr);
+            }
+
+            alert('Registro exitoso. Revisa tu correo si tu proyecto exige confirmación y luego inicia sesión.');
+            toggleAuthForm();
+        }
+
+        async function logout(){
+            await supa.auth.signOut();
+            currentUser = null;
+            await cleanupRealtime();
+            showPage('welcome');
+        }
+
+        // ========= SESIONES =========
+        async function generateNewSession(){
+            const { data: u } = await supa.auth.getUser();
+            if (!u?.user) return alert('Primero inicia sesión.');
+            const code = 'AULAPUDU-' + Math.floor(10000 + Math.random()*90000);
+            const { data, error } = await supa.from('sessions').insert({
+                session_code: code, presenter_id: u.user.id, title: 'Sesión en vivo'
+            }).select('id, session_code').single();
+            if (error) return alert('Error creando sesión: ' + error.message);
+            currentSessionCode = data.session_code;
+            document.getElementById('session-id-display').textContent = data.session_code;
+            document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(data.session_code)}`;
+            await initRealtimeForSession(currentSessionCode);
+            alert(`Nueva sesión creada: ${currentSessionCode}`);
+        }
+
+        // ========= ASISTENCIA =========
+        async function joinSession(){
+            const sessionCode = document.getElementById('session-id-input').value.trim();
+            const spectatorName = document.getElementById('spectator-name').value.trim();
+            if (!sessionCode || !spectatorName) return alert('Por favor, ingresa el ID de sesión y tu nombre.');
+
+            const { data: sess, error: e1 } = await supa.from('sessions')
+                .select('id, session_code, active').eq('session_code', sessionCode).single();
+            if (e1 || !sess) return alert('Sesión no encontrada.');
+            if (sess.active === false) return alert('La sesión no está activa.');
+
+            const { error: e2 } = await supa.from('attendance').insert({ session_id: sess.id, spectator_name: spectatorName });
+            if (e2) return alert('No se pudo registrar asistencia: ' + e2.message);
+
+            currentSessionCode = sess.session_code;
+            await initRealtimeForSession(currentSessionCode);
+            document.getElementById('spectator-presentation-title').textContent = document.getElementById('current-presentation-title').textContent;
+            document.getElementById('spectator-total-slides').textContent = totalSlides;
+            document.getElementById('spectator-slide-number').textContent = currentSlide;
+            showPage('spectator-interface');
+        }
+
+        function viewAttendance(){
+            const rpt = document.getElementById('attendance-report');
+            rpt.style.display = (rpt.style.display === 'none' ? 'block' : 'none');
+            updateAttendanceReport();
+        }
+
+        async function updateAttendanceReport(){
+            const list = document.getElementById('attendance-list');
+            list.innerHTML = '';
+            const code = document.getElementById('session-id-display')?.textContent || currentSessionCode;
+            if (!code) { list.innerHTML = '<p>No hay sesión seleccionada.</p>'; return; }
+            const { data: sess, error: e1 } = await supa.from('sessions').select('id').eq('session_code', code).single();
+            if (e1 || !sess) { list.innerHTML = '<p>Sesión no encontrada.</p>'; return; }
+            const { data: rows, error: e2 } = await supa.from('attendance')
+                .select('spectator_name, joined_at').eq('session_id', sess.id).order('joined_at', { ascending: false });
+            if (e2) { list.innerHTML = '<p>Error obteniendo asistencia.</p>'; return; }
+            if (!rows || rows.length === 0) { list.innerHTML = '<p>No hay registros de asistencia para esta sesión.</p>'; return; }
+            rows.forEach(r => appendAttendanceRow(list, r.spectator_name, r.joined_at));
+        }
+        function appendAttendanceRow(container, name, ts){
+            const item = document.createElement('div');
+            item.style.padding = '10px'; item.style.borderBottom = '1px solid #eee';
+            item.style.display = 'flex'; item.style.justifyContent = 'space-between';
+            const left = document.createElement('span'); left.textContent = name;
+            const right = document.createElement('span'); right.style.color = 'var(--text-medium)'; right.textContent = new Date(ts).toLocaleString();
+            item.appendChild(left); item.appendChild(right); container.prepend(item);
+        }
+
+        // ========= PRESENTACIONES (UI local) =========
+        function loadPresentation(title){
+            currentPresentation = title;
+            currentSlide = 1;
+            document.getElementById('current-presentation-title').textContent = title;
+            document.getElementById('current-presentation-text').textContent = `Presentación activa: ${title}`;
+            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('total-slides').textContent = totalSlides;
+            document.getElementById('spectator-presentation-title').textContent = title;
+            document.getElementById('spectator-slide-number').textContent = currentSlide;
+            document.getElementById('spectator-total-slides').textContent = totalSlides;
+            alert(`Presentación "${title}" cargada exitosamente.`);
+            showPresenterContent('live-session');
+        }
+        function uploadPresentation(){
+            const input = document.getElementById('presentation-upload');
+            const file = input.files[0];
+            if (!file) return alert('Selecciona un archivo.');
+            alert(`Presentación "${file.name}" subida exitosamente (demo).`);
+            const ul = document.getElementById('presentations-list');
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${file.name}</span><div><button onclick="loadPresentation('${file.name.replace(/'/g,"\\'")}')">Cargar</button><button class="red">Eliminar</button></div>`;
+            ul.appendChild(li); input.value='';
+        }
+        function uploadMaterial(){
+            const input = document.getElementById('material-upload');
+            const file = input.files[0]; if (!file) return alert('Selecciona un archivo.');
+            alert(`Material "${file.name}" subido (demo).`);
+            const ul = document.getElementById('materials-list');
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${file.name}</span><button>Descargar</button>`; ul.appendChild(li); input.value='';
+        }
+
+        // ========= SLIDES (con broadcast) =========
+        function nextSlide(){ if (currentSlide < totalSlides){ currentSlide++; updateSlide(); broadcastSlide(); } }
+        function prevSlide(){ if (currentSlide > 1){ currentSlide--; updateSlide(); broadcastSlide(); } }
+        function updateSlide(){
+            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('spectator-slide-number').textContent = currentSlide;
+            document.getElementById('current-slide-content').innerHTML = `<h3>Diapositiva ${currentSlide}</h3><p>Contenido de la diapositiva ${currentSlide}</p>`;
+        }
+        function broadcastSlide(){
+            rt.chan?.send({ type:'broadcast', event:'slide', payload:{ currentSlide } });
+        }
+
+        // ========= PREGUNTAS (persistencia básica) =========
+        function setQuestionType(type){
+            questionType = type;
+            document.querySelectorAll('.question-type-selector button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            const c = document.getElementById('options-container');
+            if (type === 'open-ended'){ c.innerHTML=''; c.style.display='none'; }
+            else {
+                c.style.display='flex';
+                if (type === 'true-false'){
+                    c.innerHTML = `
+                        <div class="option-input"><input type="text" value="Verdadero" readonly></div>
+                        <div class="option-input"><input type="text" value="Falso" readonly></div>`;
+                } else {
+                    c.innerHTML = `
+                        <div class="option-input"><input type="text" placeholder="Opción 1"><button class="red" onclick="removeOption(this)">✕</button></div>
+                        <div class="option-input"><input type="text" placeholder="Opción 2"><button class="red" onclick="removeOption(this)">✕</button></div>`;
+                }
+            }
+        }
+        function addOption(){ const c = document.getElementById('options-container'); const n = c.children.length+1; const d=document.createElement('div'); d.className='option-input'; d.innerHTML=`<input type="text" placeholder="Opción ${n}"><button class="red" onclick="removeOption(this)">✕</button>`; c.appendChild(d); }
+        function removeOption(btn){ const c=document.getElementById('options-container'); if (c.children.length>2) btn.parentElement.remove(); else alert('Debe haber al menos dos opciones.'); }
+        async function saveQuestion(){
+            const title = document.getElementById('question-title').value.trim(); if (!title) return alert('Ingresa una pregunta.');
+            const { data: u } = await supa.auth.getUser();
+            let options=null; if (questionType!=='open-ended'){ options=[]; document.querySelectorAll('#options-container input').forEach(i=>i.value.trim() && options.push(i.value.trim())); if (options.length<2) return alert('Al menos dos opciones.');}
+            const { data: sess } = await supa.from('sessions').select('id').eq('session_code', currentSessionCode).single();
+            const { error } = await supa.from('questions').insert({ session_id: sess?.id || null, title, qtype:questionType, options, created_by: u?.user?.id || null });
+            if (error) return alert('No se pudo guardar: ' + error.message);
+            alert('Pregunta guardada.'); document.getElementById('question-title').value='';
+        }
+        function answerQuestion(){ alert('Funcionalidad de respuesta a preguntas (demo).'); }
+
+        // ========= REACCIONES (broadcast + BD) =========
+        async function sendReaction(kind){
+            const btn = event.target;
+            btn.classList.add('reaction-active'); setTimeout(()=>btn.classList.remove('reaction-active'), 800);
+
+            // Broadcast inmediato (todos ven al instante)
+            rt.chan?.send({ type:'broadcast', event:'reaction', payload:{ kind } });
+
+            // Persistir en BD (opcional pero recomendado)
+            if (rt.sessionId){
+                try { await supa.from('reactions').insert({ session_id: rt.sessionId, kind }); } catch(e){ console.warn(e); }
+            }
+
+            // Navegación solicitada por espectador
+            if (kind==='prev'){ rt.chan?.send({ type:'broadcast', event:'nav_request', payload:{ dir:'prev' } }); }
+            if (kind==='next'){ rt.chan?.send({ type:'broadcast', event:'nav_request', payload:{ dir:'next' } }); }
+        }
+        function updateReactionCounts(){
+            for (const [k,v] of Object.entries(reactionCounts)){
+                const el = document.getElementById(`count-${k}`); if (el) el.textContent = v;
+            }
+        }
+
+        // ========= TIMER / FIN =========
+        function endSession(){ if (confirm('¿Estás seguro de finalizar la sesión?')){ currentPresentation=null; currentSlide=1; showPresenterContent('overview'); alert('Sesión finalizada.'); } }
+        function startTimer(){ if (timerInterval) clearInterval(timerInterval); timerInterval = setInterval(()=>{ timerSeconds++; updateTimerDisplay(); },1000); }
+        function resetTimer(){ if (timerInterval) clearInterval(timerInterval); timerSeconds=0; updateTimerDisplay(); }
+        function updateTimerDisplay(){ const m=Math.floor(timerSeconds/60), s=timerSeconds%60; document.getElementById('timer-display').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+
+        // ========= REPORTES (UI) =========
+        function generateHTMLReport(){
+            const c = document.getElementById('html-report-container'); c.style.display='block';
+            c.innerHTML = `
+                <div class="report-container">
+                    <div class="report-header">
+                        <h3>Reporte de Resultados - Introducción a la IA</h3>
+                        <p>Generado el: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                    <div class="report-content">
+                        <h4>Resumen de Participación</h4>
+                        <p>Total de participantes: 25</p>
+                        <p>Tasa de finalización: 92%</p>
+                        <h4>Resultados por Pregunta</h4>
+                        <table class="report-table">
+                            <thead><tr><th>Pregunta</th><th>Respuesta Correcta</th><th>% de Aciertos</th></tr></thead>
+                            <tbody>
+                                <tr><td>¿Qué es la Inteligencia Artificial?</td><td>Simulación de procesos de inteligencia humana por máquinas</td><td>84%</td></tr>
+                                <tr><td>¿Cuál de estos es un algoritmo de aprendizaje supervisado?</td><td>Regresión lineal</td><td>76%</td></tr>
+                                <tr><td>Verdadero o Falso: El NLP es una rama de la IA</td><td>Verdadero</td><td>92%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="report-actions">
+                        <button onclick="printReport()">Imprimir Reporte</button>
+                        <button onclick="downloadReport()">Descargar como HTML</button>
+                    </div>
+                </div>`;
+        }
+        function printReport(){ window.print(); }
+        function downloadReport(){
+            const html = document.getElementById('html-report-container').innerHTML;
+            const blob = new Blob([html], { type:'text/html' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'reporte-resultados.html'; a.click();
+        }
+
+        // ========= REALTIME =========
+        async function initRealtimeForSession(sessionCode){
+            await cleanupRealtime();
+            // buscar id de sesión
+            const { data: sess, error } = await supa.from('sessions').select('id, session_code').eq('session_code', sessionCode).single();
+            if (error || !sess) return;
+
+            rt.sessionId = sess.id;
+            rt.presenceKey = Math.random().toString(36).slice(2);
+
+            rt.chan = supa.channel(`session:${sessionCode}`, { config: { presence: { key: rt.presenceKey } } });
+
+            // PRESENCE: contador y lista de espectadores
+            rt.chan.on('presence', { event:'sync' }, () => {
+                const state = rt.chan.presenceState();
+                const people = Object.values(state).flat();
+                document.getElementById('connected-spectators').textContent = `${people.length} espectadores activos`;
+                const activeSpan = document.getElementById('active-spectators'); if (activeSpan) activeSpan.textContent = people.length;
+                const list = document.getElementById('spectators-list');
+                if (list){ list.innerHTML = ''; people.forEach(p => { const li=document.createElement('li'); li.innerHTML = `<span>${p.name || 'Invitado'}</span><div><button>Ver Perfil</button><button>Mensaje</button></div>`; list.appendChild(li); }); }
+            });
+
+            // INSERTS de asistencia (pinta en informes al vuelo)
+            rt.chan.on('postgres_changes',
+              { event:'INSERT', schema:'public', table:'attendance', filter:`session_id=eq.${rt.sessionId}` },
+              (payload) => {
+                const list = document.getElementById('attendance-list');
+                if (list){ appendAttendanceRow(list, payload.new.spectator_name, payload.new.joined_at); }
+              });
+
+            // Broadcast: cambio de diapositiva
+            rt.chan.on('broadcast', { event:'slide' }, (msg) => {
+                const n = Number(msg.payload?.currentSlide);
+                if (!Number.isNaN(n)){
+                    currentSlide = n; updateSlide();
+                }
+            });
+
+            // Broadcast: reacciones (incrementa contadores en presentador)
+            rt.chan.on('broadcast', { event:'reaction' }, (msg) => {
+                const k = msg.payload?.kind;
+                if (reactionCounts[k] !== undefined){ reactionCounts[k]++; updateReactionCounts(); }
+            });
+
+            // (Opcional) peticiones de navegación desde espectadores
+            rt.chan.on('broadcast', { event:'nav_request' }, (msg) => {
+                const dir = msg.payload?.dir;
+                if (!currentPresentation) return; // solo si presentador está mostrando algo
+                if (dir==='prev') prevSlide();
+                if (dir==='next') nextSlide();
+            });
+
+            await rt.chan.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED'){
+                    const { data: u } = await supa.auth.getUser();
+                    const name =
+                        document.getElementById('spectator-name')?.value?.trim() ||
+                        u?.user?.email || 'Invitado';
+                    const role = u?.user ? 'presenter' : 'spectator';
+                    await rt.chan.track({ name, role });
+                }
+            });
+        }
+
+        async function cleanupRealtime(){
+            if (rt.chan){ try { await supa.removeChannel(rt.chan); } catch(e){} }
+            rt = { chan:null, sessionId:null, presenceKey:null };
+        }
+
+        // ========= INIT =========
+        document.addEventListener('DOMContentLoaded', async () => {
+            showPage('welcome');
+            const { data } = await supa.auth.getUser();
+            if (data?.user) currentUser = data.user;
+        });
+        
+    </script>
+    <script>
+// ====== AÑADIDOS PARA PRESENTAR PDF/PPTX EN VIVO ======
+const STORAGE_BUCKET = 'presentations';
+let pdfDoc = null;
+let pdfUrl = null;
+
+// Utilidad: subir archivo a Storage y devolver URL pública
+async function uploadToStorage(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const ts = Date.now();
+  const path = `${currentSessionCode}/${ts}-${file.name}`;
+  const { error: upErr } = await supa.storage.from(STORAGE_BUCKET).upload(path, file, { upsert: true, contentType: file.type });
+  if (upErr) throw upErr;
+  const { data: pub } = supa.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+  return { url: pub.publicUrl, ext };
+}
+
+// Utilidad: construir URL del visor de Office para PPTX
+function officeViewerUrl(publicUrl) {
+  const src = encodeURIComponent(publicUrl);
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${src}`;
+}
+
+// Render de una página PDF en el contenedor actual (presentador y espectador)
+async function renderPdfPage(pageNumber) {
+  if (!pdfDoc) return;
+  const page = await pdfDoc.getPage(pageNumber);
+  const viewport = page.getViewport({ scale: 1.5 });
+
+  // Prepara el contenedor
+  const container = document.getElementById('current-slide-content');
+  container.innerHTML = ''; // no cambia estilos globales
+  const canvas = document.createElement('canvas');
+  canvas.id = 'pdf-canvas';
+  canvas.style.maxWidth = '100%';
+  canvas.style.height = 'auto';
+  container.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  // También pinta en la vista del espectador si existe esa área
+  const specContainer = document.querySelector('#spectator-interface #current-slide-content');
+  if (specContainer) {
+    specContainer.innerHTML = '';
+    const sc = canvas.cloneNode(true);
+    specContainer.appendChild(sc);
+  }
+}
+
+// Abrir un PDF (descarga y prepara pdf.js)
+async function openPdf(url) {
+  pdfUrl = url;
+  const loadingTask = pdfjsLib.getDocument(pdfUrl);
+  pdfDoc = await loadingTask.promise;
+  totalSlides = pdfDoc.numPages;
+  document.getElementById('total-slides').textContent = totalSlides;
+  const specTotal = document.getElementById('spectator-total-slides');
+  if (specTotal) specTotal.textContent = totalSlides;
+  currentSlide = 1;
+  await renderPdfPage(currentSlide);
+}
+
+// Mostrar un PPTX dentro de un iframe (sincronía de navegación no disponible)
+function openPptx(viewUrl) {
+  const container = document.getElementById('current-slide-content');
+  container.innerHTML = '';
+  const iframe = document.createElement('iframe');
+  iframe.id = 'pptx-frame';
+  iframe.src = viewUrl;
+  iframe.style.width = '100%';
+  iframe.style.height = '480px';
+  iframe.style.border = '0';
+  container.appendChild(iframe);
+
+  // En espectador
+  const specContainer = document.querySelector('#spectator-interface #current-slide-content');
+  if (specContainer) {
+    specContainer.innerHTML = '';
+    const iframe2 = document.createElement('iframe');
+    iframe2.src = viewUrl;
+    iframe2.style.width = '100%';
+    iframe2.style.height = '480px';
+    iframe2.style.border = '0';
+    specContainer.appendChild(iframe2);
+  }
+
+  // Para PPTX no hay "totalSlides" expuesto; dejamos contadores como estaban
+}
+
+// Broadcast del estado de presentación para que todos carguen el mismo archivo
+function broadcastPresentation(payload) {
+  rt.chan?.send({ type: 'broadcast', event: 'presentation', payload });
+}
+
+// ====== OVERRIDE SUAVE: Subir presentación (usa Storage) ======
+async function uploadPresentation(){
+  const input = document.getElementById('presentation-upload');
+  const file = input.files[0];
+  if (!file) return alert('Selecciona un archivo.');
+
+  try {
+    const { url, ext } = await uploadToStorage(file);
+
+    if (ext === 'pdf') {
+      // Carga PDF y sincroniza
+      await openPdf(url);
+      document.getElementById('current-presentation-title').textContent = file.name;
+      document.getElementById('current-presentation-text').textContent = `Presentación activa: ${file.name}`;
+      broadcastPresentation({ type: 'pdf', url, name: file.name, totalSlides });
+      alert(`Presentación "${file.name}" subida y cargada (PDF).`);
+    } else if (ext === 'pptx' || ext === 'ppt') {
+      const viewUrl = officeViewerUrl(url);
+      openPptx(viewUrl);
+      document.getElementById('current-presentation-title').textContent = file.name;
+      document.getElementById('current-presentation-text').textContent = `Presentación activa: ${file.name}`;
+      // En PPTX no podemos sincronizar botones; ambos verán el mismo archivo en tiempo real
+      broadcastPresentation({ type: 'pptx', url: viewUrl, name: file.name });
+      alert(`Presentación "${file.name}" subida y cargada (PPTX). Nota: la navegación del visor no se puede sincronizar programáticamente.`);
+    } else {
+      alert('Formato no soportado para visualizar en vivo. Usa PDF o PPTX.');
+    }
+
+    // Mantén tu lista visual existente
+    const ul = document.getElementById('presentations-list');
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${file.name}</span>
+      <div>
+        <button onclick="loadPresentation('${file.name.replace(/'/g,"\\'")}', '${ext}', '${url.replace(/'/g,"\\'")}')">Cargar</button>
+        <button class="red">Eliminar</button>
+      </div>`;
+    ul.appendChild(li);
+    input.value = '';
+
+    // Ir directo a sesión en vivo
+    showPresenterContent('live-session');
+  } catch (e) {
+    console.error(e);
+    alert('Error al subir la presentación: ' + (e?.message || e));
+  }
+}
+
+// ====== OVERRIDE SUAVE: Cargar una presentación ya subida ======
+// name: nombre lógico, ext: 'pdf'|'pptx'|'ppt', url: URL pública (para pdf o pptx)
+async function loadPresentation(name, ext = null, url = null){
+  currentPresentation = name || 'Presentación';
+  currentSlide = 1;
+
+  document.getElementById('current-presentation-title').textContent = currentPresentation;
+  document.getElementById('current-presentation-text').textContent = `Presentación activa: ${currentPresentation}`;
+  document.getElementById('current-slide').textContent = currentSlide;
+
+  if (ext && url) {
+    if (ext.toLowerCase() === 'pdf') {
+      await openPdf(url);
+      broadcastPresentation({ type: 'pdf', url, name: currentPresentation, totalSlides });
+    } else if (ext.toLowerCase() === 'pptx' || ext.toLowerCase() === 'ppt') {
+      const viewUrl = url.startsWith('http') ? officeViewerUrl(url) : url;
+      openPptx(viewUrl);
+      broadcastPresentation({ type: 'pptx', url: viewUrl, name: currentPresentation });
+    }
+  } else {
+    // Modo demo anterior: solo texto
+    totalSlides = 10;
+    document.getElementById('total-slides').textContent = totalSlides;
+    document.getElementById('spectator-presentation-title').textContent = currentPresentation;
+    document.getElementById('spectator-slide-number').textContent = currentSlide;
+    document.getElementById('spectator-total-slides').textContent = totalSlides;
+  }
+
+  showPresenterContent('live-session');
+}
+
+// ====== Sincronía de diapositivas para PDF (reutiliza tus botones) ======
+const _origUpdateSlide = updateSlide;
+updateSlide = async function (){
+  // Si hay PDF cargado, renderiza página real
+  if (pdfDoc && pdfUrl) {
+    await renderPdfPage(currentSlide);
+    document.getElementById('current-slide').textContent = currentSlide;
+    const specNum = document.getElementById('spectator-slide-number');
+    if (specNum) specNum.textContent = currentSlide;
+  } else {
+    // Fallback a tu contenido demo
+    _origUpdateSlide();
+  }
+};
+
+// Ya tienes broadcastSlide() que envía {currentSlide}; no lo tocamos.
+
+// ====== Escucha nuevos eventos de presentación en todos los clientes ======
+(function patchRealtimePresentationListener() {
+  if (!rt) return; // se rehará en initRealtimeForSession
+})();
+
+// Extendemos tu initRealtimeForSession para escuchar 'presentation'
+const _origInitRealtimeForSession = initRealtimeForSession;
+initRealtimeForSession = async function(sessionCode){
+  await _origInitRealtimeForSession(sessionCode);
+
+  // Añadimos el listener de 'presentation' UNA sola vez por canal
+  if (rt?.chan) {
+    rt.chan.on('broadcast', { event:'presentation' }, async (msg) => {
+      const payload = msg.payload || {};
+      // Carga la misma presentación en todos
+      if (payload.type === 'pdf' && payload.url) {
+        await openPdf(payload.url);
+        if (typeof payload.totalSlides === 'number') {
+          totalSlides = payload.totalSlides;
+          document.getElementById('total-slides').textContent = totalSlides;
+          const specTotal = document.getElementById('spectator-total-slides');
+          if (specTotal) specTotal.textContent = totalSlides;
+        }
+        document.getElementById('current-presentation-title').textContent = payload.name || 'Presentación PDF';
+      } else if (payload.type === 'pptx' && payload.url) {
+        openPptx(payload.url);
+        document.getElementById('current-presentation-title').textContent = payload.name || 'Presentación PPTX';
+      }
+    });
+  }
+};
+
+// Ajusta los botones next/prev para PDF (ya usan updateSlide + broadcast)
+const _origNext = nextSlide;
+nextSlide = function(){
+  if (pdfDoc && currentSlide < totalSlides) {
+    currentSlide++;
+    updateSlide();
+    broadcastSlide();
+  } else {
+    _origNext();
+  }
+};
+const _origPrev = prevSlide;
+prevSlide = function(){
+  if (pdfDoc && currentSlide > 1) {
+    currentSlide--;
+    updateSlide();
+    broadcastSlide();
+  } else {
+    _origPrev();
+  }
+};
+</script>
+
+</body>
+</html>
