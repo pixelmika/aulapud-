@@ -1,0 +1,196 @@
+-- Extensión para UUIDs (no falla si ya existe)
+create extension if not exists "uuid-ossp";
+
+-- ========== TABLAS (solo si no existen) ==========
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  name text,
+  created_at timestamptz default now()
+);
+
+create table if not exists public.sessions (
+  id uuid primary key default uuid_generate_v4(),
+  session_code text unique not null,
+  presenter_id uuid references auth.users(id),
+  title text,
+  created_at timestamptz default now(),
+  active boolean default true
+);
+
+create table if not exists public.attendance (
+  id uuid primary key default uuid_generate_v4(),
+  session_id uuid not null references public.sessions(id) on delete cascade,
+  spectator_name text not null,
+  joined_at timestamptz default now()
+);
+
+create table if not exists public.questions (
+  id uuid primary key default uuid_generate_v4(),
+  session_id uuid references public.sessions(id) on delete cascade,
+  title text not null,
+  qtype text not null check (qtype in ('multiple-choice','true-false','open-ended')),
+  options jsonb,
+  created_by uuid references auth.users(id),
+  created_at timestamptz default now()
+);
+
+create table if not exists public.presentations (
+  id uuid primary key default uuid_generate_v4(),
+  owner_id uuid references auth.users(id),
+  title text not null,
+  total_slides int default 10,
+  created_at timestamptz default now()
+);
+
+create table if not exists public.reactions (
+  id uuid primary key default uuid_generate_v4(),
+  session_id uuid references public.sessions(id) on delete cascade,
+  kind text not null check (kind in ('love','clap','question','thumbsup','thumbsdown')),
+  created_at timestamptz default now()
+);
+
+-- ========== RLS (seguro aunque ya esté activado) ==========
+alter table public.profiles enable row level security;
+alter table public.sessions enable row level security;
+alter table public.attendance enable row level security;
+alter table public.questions enable row level security;
+alter table public.presentations enable row level security;
+alter table public.reactions enable row level security;
+
+-- Helper: crea una política si no existe
+-- (Postgres no tiene CREATE POLICY IF NOT EXISTS, así que usamos DO blocks)
+-- PROFILES
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='profiles' and policyname='read own profile'
+  ) then
+    create policy "read own profile" on public.profiles
+      for select using (auth.uid() = id);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='profiles' and policyname='insert own profile'
+  ) then
+    create policy "insert own profile" on public.profiles
+      for insert with check (auth.uid() = id);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='profiles' and policyname='update own profile'
+  ) then
+    create policy "update own profile" on public.profiles
+      for update using (auth.uid() = id);
+  end if;
+end$$;
+
+-- SESSIONS
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='sessions' and policyname='session public read'
+  ) then
+    create policy "session public read" on public.sessions
+      for select using (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='sessions' and policyname='presenter manages own sessions'
+  ) then
+    create policy "presenter manages own sessions" on public.sessions
+      for all using (auth.uid() = presenter_id) with check (auth.uid() = presenter_id);
+  end if;
+end$$;
+
+-- ATTENDANCE
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='attendance' and policyname='attendance insert public'
+  ) then
+    create policy "attendance insert public" on public.attendance
+      for insert with check (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='attendance' and policyname='attendance read by anyone'
+  ) then
+    create policy "attendance read by anyone" on public.attendance
+      for select using (true);
+  end if;
+end$$;
+
+-- QUESTIONS
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='questions' and policyname='questions public read'
+  ) then
+    create policy "questions public read" on public.questions
+      for select using (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='questions' and policyname='questions insert by presenter'
+  ) then
+    create policy "questions insert by presenter" on public.questions
+      for insert with check (auth.uid() = created_by);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='questions' and policyname='questions delete by creator'
+  ) then
+    create policy "questions delete by creator" on public.questions
+      for delete using (auth.uid() = created_by);
+  end if;
+end$$;
+
+-- PRESENTATIONS
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='presentations' and policyname='presentations public read'
+  ) then
+    create policy "presentations public read" on public.presentations
+      for select using (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='presentations' and policyname='presentations owner manage'
+  ) then
+    create policy "presentations owner manage" on public.presentations
+      for all using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
+  end if;
+end$$;
+
+-- REACTIONS
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='reactions' and policyname='reactions insert public'
+  ) then
+    create policy "reactions insert public" on public.reactions
+      for insert with check (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='reactions' and policyname='reactions public read'
+  ) then
+    create policy "reactions public read" on public.reactions
+      for select using (true);
+  end if;
+end$$;
