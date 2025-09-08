@@ -22,4 +22,5 @@ Los usuarios pueden conectarse a través de un código de sesión o QR, reaccion
 ├── index.html        # Página principal de la app
 ├── aulapudulogo.jpg  # Logo del proyecto
 ├── README.md         # Documentación del proyecto
+├── Documento técnico         # Como será trabajado el proyecto
 
